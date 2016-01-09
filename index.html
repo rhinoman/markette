@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Marionette Commonmark Editor</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
+    <script src="bower_components/backbone/backbone.js"></script>
+    <script src="bower_components/marionette/lib/backbone.marionette.js"></script>
+    <script src="bower_components/commonmark/dist/commonmark.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="src/markette.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var mev = new Markette.EditorView({el: "#editorContainer"});
+            mev.render();
+        });
+    </script>
+</head>
+<body>
+    <div id="wrapper" class="container">
+        <h1>Marionette Commonmark Editor</h1>
+        <div class="col-lg-12" id="editorContainer"></div>
+    </div>
+</body>
+</html>
