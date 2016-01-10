@@ -20,15 +20,17 @@
 
     //The Editor View
     Markette.EditorView = Marionette.ItemView.extend({
-        template: _.template('<div class="row markette-button-bar"></div><textarea class="row" id="marketteInput"></textarea>'),
+        template: _.template('<div class="row markette-button-bar"></div><textarea class="row" id="marketteInput" rows="12"></textarea>'),
         initialize: function(options){
             options = options || {};
+            this.showImageButton = options.hasOwnProperty("showImageButton") ? options.showImageButton : true;
         },
         events: {
             'click #boldButton': 'doBold',
             'click #italicButton': 'doItalic',
             'click #linkButton': 'doLink',
-            'click #blockQuoteButton': 'doBlockQuote'
+            'click #quoteButton': 'doBlockQuote',
+            'click #codeBlockButton': 'doCodeBlock'
         },
 
         /**
@@ -52,6 +54,9 @@
         codeBlockButton: function(){
             return this.buttonTemplate()({btnId: "codeBlockButton", glyph: "{ }"});
         },
+        imageButton: function(){
+            return this.buttonTemplate()({btnId: "imageButton", glyph: "<span class='glyphicon glyphicon-picture'></span>"});
+        },
 
         // Renders the editor and toolbar
         onRender: function(){
@@ -61,6 +66,9 @@
             this.$(".btn-group").append(this.linkButton());
             this.$(".btn-group").append(this.blockQuoteButton());
             this.$(".btn-group").append(this.codeBlockButton());
+            if(this.showImageButton) {
+                this.$(".btn-group").append(this.imageButton());
+            }
         },
 
         // Returns the contents of the input textarea
@@ -74,7 +82,7 @@
 
         // Make selected text bold
         doBold: function(event){
-            this.doMarkupSelection({
+            this.doInlineMarkup({
                 before: '**',
                 after: '**'
             });
@@ -82,7 +90,7 @@
 
         // Make selected text italic
         doItalic: function(event){
-            this.doMarkupSelection({
+            this.doInlineMarkup({
                 before: '*',
                 after: '*'
             });
@@ -90,7 +98,7 @@
 
         // Insert Hyperlink
         doLink: function(event){
-            this.doMarkupSelection({
+            this.doInlineMarkup({
                 before: '[',
                 after: '](http://)'
             });
@@ -98,31 +106,81 @@
 
         // Insert a block quote
         doBlockQuote: function(event){
-            this.doMarkupSelection({
-                before: '\n> ',
-                after: '\n'
-            })
+            this.doBlockMarkup({
+                before: '> ',
+                after: ''
+            }, "Blockquote");
         },
 
-        doMarkupSelection: function(tokens){
+        doCodeBlock: function(event){
+            this.doBlockMarkup({
+                before: '```\n',
+                after: '\n```'
+            }, "code goes here");
+        },
+
+        doBlockMarkup: function(tokens, placeholder){
             var ta = this.$("textarea#marketteInput");
-            var position = getInputSelection(ta.get(0));
-            var allText = ta.val();
+            var selectionStrings = this._getSelectionStrings(ta);
+            if (selectionStrings.selection === ""){
+                selectionStrings.selection = placeholder;
+            }
+            if(!this._alreadyMarked(ta, tokens)){
+                if (selectionStrings.before === "" && selectionStrings.after !== ""){
+                    tokens.after += '\n\n';
+                } else if (selectionStrings.before !== "" && selectionStrings.after === ""){
+                    tokens.before = '\n\n' + tokens.before;
+                } else if (selectionStrings.before !== "" && selectionStrings.after !== ""){
+                    tokens.before = '\n\n' + tokens.before;
+                    tokens.after += '\n\n';
+                }
+                this._replaceSelection(ta, tokens, selectionStrings);
+            }
+        },
+
+        doInlineMarkup: function(tokens){
+            var ta = this.$("textarea#marketteInput");
+            var selectionStrings = this._getSelectionStrings(ta);
+            // Make sure this text isn't already marked up
+            if(this._alreadyMarked(ta, tokens)){
+                return false;
+            } else {
+                this._replaceSelection(ta, tokens, selectionStrings);
+                return true;
+            }
+        },
+
+        _alreadyMarked: function(textarea, tokens){
+            var allText = textarea.val();
+            var position = getInputSelection(textarea.get(0));
+            var prevBefore = allText.substring(position.start - tokens.before.length, position.start);
+            var prevAfter = allText.substring(position.end,  position.end + tokens.after.length);
+            if(prevBefore === tokens.before && prevAfter === tokens.after){
+                return true;
+            } else {
+                return false;
+            }
+        },
+
+        _getSelectionStrings: function(textarea){
+            var position = getInputSelection(textarea.get(0));
+            var allText = textarea.val();
             var textBefore = allText.substring(0, position.start);
             var textAfter = allText.substring(position.end, allText.length);
             var selection = allText.substring(position.start, position.end);
+            return {
+                before: textBefore,
+                after: textAfter,
+                selection: selection
+            };
+        },
 
-            var prevBefore = allText.substring(position.start - tokens.before.length, position.start);
-            var prevAfter = allText.substring(position.end,  position.end + tokens.after.length);
-            console.log("BEFORE: " + prevBefore);
-            console.log("AFTER: " + prevAfter);
-            // Make sure this text isn't already marked up
-            if(prevBefore === tokens.before && prevAfter === tokens.after){
-                return false;
-            } else {
-                ta.val(textBefore + tokens.before + selection + tokens.after + textAfter);
-                return true;
-            }
+        _replaceSelection: function(textarea, tokens, selectionStrings){
+            textarea.val(selectionStrings.before +
+                tokens.before +
+                selectionStrings.selection +
+                tokens.after +
+                selectionStrings.after);
         }
 
     });
@@ -131,6 +189,8 @@
     Markette.Preview = Marionette.ItemView.extend({
 
     });
+
+
 
     //Returns the start and end position (or caret position) in the text area
     //Code shamelessly taken from this answer on Stack Overflow: http://stackoverflow.com/a/3373056/1090568
