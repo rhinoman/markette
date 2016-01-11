@@ -3,11 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Markette Tests</title>
+    <script type="text/javascript">
+        $(function(){
+            var editorView = Markette.EditorView({el: "#editorContainer"});
+            editorView.render();
+        });
+    </script>
 </head>
+
 <body>
 <div id="wrapper" class="container">
     <h1>Marionette Commonmark Tests</h1>
-    <div class="col-lg-12" id="editorContainer"></div>
+    <div class="container" id="editorContainer"></div>
 </div>
 </body>
 </html>

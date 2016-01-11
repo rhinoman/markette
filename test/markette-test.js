@@ -3,21 +3,118 @@
  */
 
 phantom.injectJs('../bower_components/jquery/dist/jquery.js');
-phantom.injectJs('../bower_components/underscore/underscore.js');
-phantom.injectJs('../bower_components/backbone/backbone.js');
-phantom.injectJs('../bower_components/marionette/lib/backbone.marionette.js');
-phantom.injectJs('../bower_components/commonmark/dist/commonmark.js');
-phantom.injectJs('../src/markette.js');
 
-casper.test.begin('Markette editor works', 2, function suite(test){
-    casper.start('test.html', function(){
-        var editorView = new Markette.EditorView();
-        test.assertTitle("Markette Tests");
-        test.assertInstanceOf(editorView, Markette.EditorView, "editorView is a Markette EditorView");
+casper.test.begin('Markette editor renders correctly', 4, function(test){
+
+    casper.start('../index.html', function(){
+        test.assertExists('#editorContainer');
+        test.assertExists('.markette-button-bar');
+        test.assertExists('.btn-group');
+        test.assertExists('textarea#marketteInput');
+    }).run(function(){
+        setTimeout(function(){
+            test.done();
+        }, 0);
     });
+});
 
-    casper.run(function(){
-        // Workaround for PhantomJS bug
+
+casper.test.begin('Bold function works', 1, function(test){
+
+    casper.start('../index.html', function(){
+        this.click('button#boldButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "****");
+
+    }).run(function(){
+        setTimeout(function(){
+            test.done();
+        }, 0);
+    })
+
+});
+
+casper.test.begin('Italic function works', 1, function(test){
+
+    casper.start('../index.html', function(){
+        this.click('button#italicButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "**");
+
+    }).run(function(){
+        setTimeout(function(){
+            test.done();
+        }, 0);
+    })
+
+});
+
+casper.test.begin('Link function works', 1, function(test){
+
+    casper.start('../index.html', function(){
+        this.click('button#linkButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "[](http://)");
+
+    }).run(function(){
+        setTimeout(function(){
+            test.done();
+        }, 0);
+    })
+
+});
+
+casper.test.begin('Blockquote function works', 2, function(test){
+
+    casper.start('../index.html', function(){
+        this.click('button#quoteButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "> Blockquote");
+        casper.evaluate(function(){
+            return $("textarea#marketteInput").val("");
+        });
+        this.sendKeys('textarea#marketteInput', "This is some text");
+        this.click('button#quoteButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "This is some text\n\n> Blockquote");
+
+    }).run(function(){
+        setTimeout(function(){
+            test.done();
+        }, 0);
+    })
+
+});
+
+casper.test.begin('Codeblock function works', 2, function(test){
+
+    casper.start('../index.html', function(){
+        this.click('button#codeBlockButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "```\ncode goes here\n```");
+        casper.evaluate(function(){
+            return $("textarea#marketteInput").val("");
+        });
+        this.sendKeys('textarea#marketteInput', "This is some text");
+        this.click('button#codeBlockButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "This is some text\n\n```\ncode goes here\n```");
+
+    }).run(function(){
         setTimeout(function(){
             test.done();
             phantom.exit();
