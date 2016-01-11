@@ -3,3 +3,23 @@ textarea#marketteInput{
     width: 100%;
     margin-top:5px;
 }
+
+button#numberedListButton{
+    height: 100%;
+}
+
+button#numberedListButton{
+}
+
+button#numberedListButton p.li-num{
+    float:left;
+    display: inline;
+    font-size: 0.35em;
+    line-height: 1.25em;
+    margin:0;
+}
+
+button#numberedListButton span.glyphicon{
+    /*font-size: 1.15em;*/
+}
+

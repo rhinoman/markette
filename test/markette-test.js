@@ -117,8 +117,74 @@ casper.test.begin('Codeblock function works', 2, function(test){
     }).run(function(){
         setTimeout(function(){
             test.done();
-            phantom.exit();
         }, 0);
     })
 
 });
+
+casper.test.begin('Image function works', 1, function(test){
+
+    casper.start('../index.html', function(){
+        this.click('button#imageButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "![](http://)");
+
+    }).run(function(){
+        setTimeout(function(){
+            test.done();
+        }, 0);
+    })
+
+});
+
+casper.test.begin('Ordered List function works', 2, function(test){
+    casper.start('../index.html', function(){
+        this.click('button#numberedListButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, " 1. List item");
+        casper.evaluate(function(){
+            return $("textarea#marketteInput").val("");
+        });
+        this.sendKeys('textarea#marketteInput', "This is some text");
+        this.click('button#numberedListButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "This is some text\n\n 1. List item");
+
+    }).run(function(){
+        setTimeout(function(){
+            test.done();
+        }, 0);
+    })
+});
+
+casper.test.begin('Unordered List function works', 2, function(test){
+    casper.start('../index.html', function(){
+        this.click('button#bulletListButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, " - List item");
+        casper.evaluate(function(){
+            return $("textarea#marketteInput").val("");
+        });
+        this.sendKeys('textarea#marketteInput', "This is some text");
+        this.click('button#bulletListButton');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "This is some text\n\n - List item");
+
+    }).run(function(){
+        setTimeout(function(){
+            test.done();
+            phantom.exit();
+        }, 0);
+    })
+});
+

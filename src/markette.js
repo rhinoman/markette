@@ -29,8 +29,11 @@
             'click #boldButton': 'doBold',
             'click #italicButton': 'doItalic',
             'click #linkButton': 'doLink',
+            'click #imageButton': 'doImage',
             'click #quoteButton': 'doBlockQuote',
-            'click #codeBlockButton': 'doCodeBlock'
+            'click #codeBlockButton': 'doCodeBlock',
+            'click #numberedListButton': 'doNumberedList',
+            'click #bulletListButton': 'doBulletList'
         },
 
         /**
@@ -57,6 +60,14 @@
         imageButton: function(){
             return this.buttonTemplate()({btnId: "imageButton", glyph: "<span class='glyphicon glyphicon-picture'></span>"});
         },
+        numberedListButton: function(){
+            return this.buttonTemplate()({btnId: "numberedListButton", glyph: "<p class='li-num'>1.<br/>2.<br/>3.</p>" +
+            "<span class='glyphicon glyphicon-menu-hamburger'></span>"});
+        },
+        bulletListButton: function(){
+            return this.buttonTemplate()({btnId: "bulletListButton", glyph: "<span class='glyphicon glyphicon-list'></span>"})
+        },
+
 
         // Renders the editor and toolbar
         onRender: function(){
@@ -69,6 +80,8 @@
             if(this.showImageButton) {
                 this.$(".btn-group").append(this.imageButton());
             }
+            this.$(".btn-group").append(this.numberedListButton());
+            this.$(".btn-group").append(this.bulletListButton());
         },
 
         // Returns the contents of the input textarea
@@ -104,6 +117,14 @@
             });
         },
 
+        // Insert Image link
+        doImage: function(event){
+            this.doInlineMarkup({
+                before: '![',
+                after: '](http://)'
+            })
+        },
+
         // Insert a block quote
         doBlockQuote: function(event){
             this.doBlockMarkup({
@@ -117,6 +138,20 @@
                 before: '```\n',
                 after: '\n```'
             }, "code goes here");
+        },
+
+        doNumberedList: function(event){
+            this.doBlockMarkup({
+                before: ' 1. ',
+                after: ''
+            }, "List item")
+        },
+
+        doBulletList: function(event){
+            this.doBlockMarkup({
+                before: ' - ',
+                after: ''
+            }, "List item")
         },
 
         doBlockMarkup: function(tokens, placeholder){
