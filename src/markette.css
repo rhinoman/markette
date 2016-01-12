@@ -1,5 +1,5 @@
 textarea#marketteInput{
-    font-family: Consolas, Menlo, Monaco, Lucida COnsole, Courier New, monospace, serif;
+    font-family: Consolas, Menlo, Monaco, Lucida Console, "Courier New", monospace, serif;
     width: 100%;
     margin-top:5px;
 }
@@ -19,7 +19,10 @@ button#numberedListButton p.li-num{
     margin:0;
 }
 
-button#numberedListButton span.glyphicon{
-    /*font-size: 1.15em;*/
+span.mk-btn-text{
+    font-weight: bold;
+    font-size: smaller;
+    font-family: "Times New Roman", Times, serif;
+    vertical-align: text-top;
 }
 

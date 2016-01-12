@@ -33,14 +33,16 @@
             'click #quoteButton': 'doBlockQuote',
             'click #codeBlockButton': 'doCodeBlock',
             'click #numberedListButton': 'doNumberedList',
-            'click #bulletListButton': 'doBulletList'
+            'click #bulletListButton': 'doBulletList',
+            'click #heading1Button': 'doHeading1',
+            'click #heading2Button': 'doHeading2'
         },
 
         /**
          * These functions create basic buttons for the toolbar
          */
         buttonTemplate: function(){
-            return _.template("<button id='<%= btnId %>' type='button' class='btn btn-default'><%= glyph %></button>");
+            return _.template("<button id='<%= btnId %>' type='button' class='btn btn-default markette-btn'><%= glyph %></button>");
         },
         boldButton: function(){
             return this.buttonTemplate()({btnId: "boldButton", glyph: "<span class='glyphicon glyphicon-bold'></span>"});
@@ -55,7 +57,7 @@
             return this.buttonTemplate()({btnId: "quoteButton", glyph: "<span class='glyphicon glyphicon-comment'></span>"});
         },
         codeBlockButton: function(){
-            return this.buttonTemplate()({btnId: "codeBlockButton", glyph: "{ }"});
+            return this.buttonTemplate()({btnId: "codeBlockButton", glyph: "<span class='mk-btn-text'>{ }</span>"});
         },
         imageButton: function(){
             return this.buttonTemplate()({btnId: "imageButton", glyph: "<span class='glyphicon glyphicon-picture'></span>"});
@@ -67,7 +69,12 @@
         bulletListButton: function(){
             return this.buttonTemplate()({btnId: "bulletListButton", glyph: "<span class='glyphicon glyphicon-list'></span>"})
         },
-
+        heading1Button: function(){
+            return this.buttonTemplate()({btnId: "heading1Button", glyph: "<span class='mk-btn-text'>H1</span>"})
+        },
+        heading2Button: function(){
+            return this.buttonTemplate()({btnId: "heading2Button", glyph: "<span class='mk-btn-text'>H2</span>"})
+        },
 
         // Renders the editor and toolbar
         onRender: function(){
@@ -82,6 +89,8 @@
             }
             this.$(".btn-group").append(this.numberedListButton());
             this.$(".btn-group").append(this.bulletListButton());
+            this.$(".btn-group").append(this.heading1Button());
+            this.$(".btn-group").append(this.heading2Button());
         },
 
         // Returns the contents of the input textarea
@@ -152,6 +161,28 @@
                 before: ' - ',
                 after: ''
             }, "List item")
+        },
+
+        doHeading1: function(event){
+            this.doHeadingMarkup("=");
+        },
+
+        doHeading2: function(event){
+            this.doHeadingMarkup("-");
+        },
+
+        doHeadingMarkup: function(mChar){
+            var ta = this.$("textarea#marketteInput");
+            var selectionStrings = this._getSelectionStrings(ta);
+            if (selectionStrings.selection === ""){
+                selectionStrings.selection = "Heading";
+            }
+            var len = selectionStrings.selection.length;
+            var hdgStr = new Array(len + 1).join(mChar);
+            this.doBlockMarkup({
+                before: '',
+                after: '\n' + hdgStr
+            }, "Heading");
         },
 
         doBlockMarkup: function(tokens, placeholder){

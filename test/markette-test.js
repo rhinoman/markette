@@ -83,7 +83,7 @@ casper.test.begin('Blockquote function works', 2, function(test){
         });
         this.sendKeys('textarea#marketteInput', "This is some text");
         this.click('button#quoteButton');
-        var text = casper.evaluate(function(){
+        text = casper.evaluate(function(){
             return $("textarea#marketteInput").val();
         });
         test.assertEquals(text, "This is some text\n\n> Blockquote");
@@ -109,7 +109,7 @@ casper.test.begin('Codeblock function works', 2, function(test){
         });
         this.sendKeys('textarea#marketteInput', "This is some text");
         this.click('button#codeBlockButton');
-        var text = casper.evaluate(function(){
+        text = casper.evaluate(function(){
             return $("textarea#marketteInput").val();
         });
         test.assertEquals(text, "This is some text\n\n```\ncode goes here\n```");
@@ -151,7 +151,7 @@ casper.test.begin('Ordered List function works', 2, function(test){
         });
         this.sendKeys('textarea#marketteInput', "This is some text");
         this.click('button#numberedListButton');
-        var text = casper.evaluate(function(){
+        text = casper.evaluate(function(){
             return $("textarea#marketteInput").val();
         });
         test.assertEquals(text, "This is some text\n\n 1. List item");
@@ -175,10 +175,60 @@ casper.test.begin('Unordered List function works', 2, function(test){
         });
         this.sendKeys('textarea#marketteInput', "This is some text");
         this.click('button#bulletListButton');
-        var text = casper.evaluate(function(){
+        text = casper.evaluate(function(){
             return $("textarea#marketteInput").val();
         });
         test.assertEquals(text, "This is some text\n\n - List item");
+
+    }).run(function(){
+        setTimeout(function(){
+            test.done();
+        }, 0);
+    })
+});
+
+//Heading 1 Test
+casper.test.begin('Heading1 function works', 2, function(test){
+    casper.start('../index.html', function(){
+        this.click('button#heading1Button');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "Heading\n=======");
+        casper.evaluate(function(){
+            return $("textarea#marketteInput").val("");
+        });
+        this.sendKeys('textarea#marketteInput', "Text!");
+        this.click('button#heading1Button');
+        text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "Text!\n\nHeading\n=======");
+
+    }).run(function(){
+        setTimeout(function(){
+            test.done();
+        }, 0);
+    })
+});
+
+//Heading 2 Test
+casper.test.begin('Heading2 function works', 2, function(test){
+    casper.start('../index.html', function(){
+        this.click('button#heading2Button');
+        var text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "Heading\n-------");
+        casper.evaluate(function(){
+            return $("textarea#marketteInput").val("");
+        });
+        this.sendKeys('textarea#marketteInput', "Text!");
+        this.click('button#heading2Button');
+        text = casper.evaluate(function(){
+            return $("textarea#marketteInput").val();
+        });
+        test.assertEquals(text, "Text!\n\nHeading\n-------");
 
     }).run(function(){
         setTimeout(function(){
@@ -187,4 +237,3 @@ casper.test.begin('Unordered List function works', 2, function(test){
         }, 0);
     })
 });
-
