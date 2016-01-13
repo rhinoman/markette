@@ -182,14 +182,18 @@
             this.doBlockMarkup({
                 before: '',
                 after: '\n' + hdgStr
-            }, "Heading");
+            }, "Heading", true);
         },
 
-        doBlockMarkup: function(tokens, placeholder){
+        doBlockMarkup: function(tokens, placeholder, stripnewlines){
+            stripnewlines = stripnewlines || false;
             var ta = this.$("textarea#marketteInput");
             var selectionStrings = this._getSelectionStrings(ta);
             if (selectionStrings.selection === ""){
                 selectionStrings.selection = placeholder;
+            }
+            if(stripnewlines) {
+                selectionStrings.selection = selectionStrings.selection.replace(/(\r\n|\n|\r)/gm, "");
             }
             if(!this._alreadyMarked(ta, tokens)){
                 if (selectionStrings.before === "" && selectionStrings.after !== ""){
@@ -218,7 +222,7 @@
 
         _alreadyMarked: function(textarea, tokens){
             var allText = textarea.val();
-            var position = getInputSelection(textarea.get(0));
+            var position = this._getInputSelection(textarea.get(0));
             var prevBefore = allText.substring(position.start - tokens.before.length, position.start);
             var prevAfter = allText.substring(position.end,  position.end + tokens.after.length);
             if(prevBefore === tokens.before && prevAfter === tokens.after){
@@ -229,7 +233,7 @@
         },
 
         _getSelectionStrings: function(textarea){
-            var position = getInputSelection(textarea.get(0));
+            var position = this._getInputSelection(textarea.get(0));
             var allText = textarea.val();
             var textBefore = allText.substring(0, position.start);
             var textAfter = allText.substring(position.end, allText.length);
@@ -242,11 +246,58 @@
         },
 
         _replaceSelection: function(textarea, tokens, selectionStrings){
-            textarea.val(selectionStrings.before +
-                tokens.before +
+            var beforeString = selectionStrings.before + tokens.before;
+            var afterString = tokens.after + selectionStrings.after;
+            textarea.val(beforeString +
                 selectionStrings.selection +
-                tokens.after +
-                selectionStrings.after);
+                afterString);
+            //And re-select our selection
+            textarea.get(0).setSelectionRange(beforeString.length,
+                beforeString.length + selectionStrings.selection.length);
+        },
+
+        //Returns the start and end position (or caret position) in the text area
+        _getInputSelection: function() {
+            var textarea = this.$("textarea#marketteInput").get(0);
+            var start = 0, end = 0, normalizedValue, range,
+                textInputRange, len, endRange;
+
+            if (typeof textarea.selectionStart == "number" && typeof textarea.selectionEnd == "number") {
+                start = textarea.selectionStart;
+                end = textarea.selectionEnd;
+            } else {
+                range = document.selection.createRange();
+
+                if (range && range.parentElement() == textarea) {
+                    len = textarea.value.length;
+                    normalizedValue = textarea.value.replace(/\r\n/g, "\n");
+
+                    textInputRange = textarea.createTextRange();
+                    textInputRange.moveToBookmark(range.getBookmark());
+
+                    endRange = textarea.createTextRange();
+                    endRange.collapse(false);
+
+                    if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
+                        start = end = len;
+                    } else {
+                        start = -textInputRange.moveStart("character", -len);
+                        start += normalizedValue.slice(0, start).split("\n").length - 1;
+
+                        if (textInputRange.compareEndPoints("EndToEnd", endRange) > -1) {
+                            end = len;
+                        } else {
+                            end = -textInputRange.moveEnd("character", -len);
+                            end += normalizedValue.slice(0, end).split("\n").length - 1;
+                        }
+                    }
+                }
+            }
+
+            return {
+                start: start,
+                end: end
+            };
         }
 
     });
@@ -255,57 +306,6 @@
     Markette.Preview = Marionette.ItemView.extend({
 
     });
-
-
-
-    //Returns the start and end position (or caret position) in the text area
-    //Code shamelessly taken from this answer on Stack Overflow: http://stackoverflow.com/a/3373056/1090568
-    function getInputSelection(el) {
-        var start = 0, end = 0, normalizedValue, range,
-            textInputRange, len, endRange;
-
-        if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
-            start = el.selectionStart;
-            end = el.selectionEnd;
-        } else {
-            range = document.selection.createRange();
-
-            if (range && range.parentElement() == el) {
-                len = el.value.length;
-                normalizedValue = el.value.replace(/\r\n/g, "\n");
-
-                // Create a working TextRange that lives only in the input
-                textInputRange = el.createTextRange();
-                textInputRange.moveToBookmark(range.getBookmark());
-
-                // Check if the start and end of the selection are at the very end
-                // of the input, since moveStart/moveEnd doesn't return what we want
-                // in those cases
-                endRange = el.createTextRange();
-                endRange.collapse(false);
-
-                if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
-                    start = end = len;
-                } else {
-                    start = -textInputRange.moveStart("character", -len);
-                    start += normalizedValue.slice(0, start).split("\n").length - 1;
-
-                    if (textInputRange.compareEndPoints("EndToEnd", endRange) > -1) {
-                        end = len;
-                    } else {
-                        end = -textInputRange.moveEnd("character", -len);
-                        end += normalizedValue.slice(0, end).split("\n").length - 1;
-                    }
-                }
-            }
-        }
-
-        return {
-            start: start,
-            end: end
-        };
-    }
-
 
     return Markette;
 }));

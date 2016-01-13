@@ -26,3 +26,6 @@ span.mk-btn-text{
     vertical-align: text-top;
 }
 
+button.markette-btn {
+    border: none;
+}
