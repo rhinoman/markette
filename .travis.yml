@@ -5,4 +5,5 @@ before_install:
   - npm install -g phantomjs
   - npm install -g casperjs
 script:
-  - casperjs test test/markette-test.js
+  - cd test
+  - casperjs test markette-test.js
