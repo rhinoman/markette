@@ -11,7 +11,7 @@
     "test",
     "bower_components",
     "*.md",
-    "*.iml",
+    "*.iml"
   ],
   "keywords": [
     "marionette",
