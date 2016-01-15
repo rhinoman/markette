@@ -1,22 +1,25 @@
-(function (root, factory){
+(function (root, factory) {
     //AMD module if available
-    if (typeof define === 'function' && define.amd){
-        define(['jQuery', 'underscore', 'backbone', 'marionette', 'commonmark'], factory);
+    if (typeof define === 'function' && define.amd) {
+        define(['jQuery', 'underscore', 'marionette', 'commonmark'], factory);
+    //CommonJS
+    } else if (typeof exports !== 'undefined'){
+        var $ = require('jquery');
+        var _ = require('underscore');
+        var Marionette = require('marionette');
+        var Commonmark = require('commonmark');
+        factory(root, exports, $, _, Marionette, Commonmark);
     } else {
-        // Browser globals
-        root.Markette = factory(root, root.jQuery, root._, root.Backbone, root.Marionette, root.commonmark );
+    // Browser globals
+        root.Markette = factory(root, root.jQuery, root._, root.Marionette, root.commonmark );
     }
 
 
-}( this, function (root, $, _, Backbone, Marionette, Commonmark){
+}( this, function (root, $, _, Marionette, Commonmark){
     'use strict';
 
     var Markette = {};
     Markette.VERSION = '0.1.0';
-
-    Markette.View = Marionette.LayoutView.extend({
-
-    });
 
     //The Editor View
     Markette.EditorView = Marionette.ItemView.extend({
@@ -268,7 +271,7 @@
             } else {
                 range = document.selection.createRange();
 
-                if (range && range.parentElement() == textarea) {
+                if (range) {
                     len = textarea.value.length;
                     normalizedValue = textarea.value.replace(/\r\n/g, "\n");
 
@@ -304,6 +307,19 @@
 
     //The Preview... view
     Markette.Preview = Marionette.ItemView.extend({
+        template: _.template('<div class="markette-preview"></div>'),
+
+        initialize: function(options){
+            this.reader = new Commonmark.Parser();
+            this.writer = new Commonmark.HtmlRenderer();
+        },
+
+        renderPreview: function(mdText){
+            var parsedText = this.reader.parse(mdText);
+            var htmlText = this.writer.render(parsedText);
+            this.$(".markette-preview").html(htmlText);
+        }
+
 
     });
 
