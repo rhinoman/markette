@@ -2,8 +2,11 @@ language: node_js
 node_js:
   - "5.4"
 before_install:
+  - npm install -g bower
   - npm install -g phantomjs
   - npm install -g casperjs
 script:
   - cd test
+  - bower install
+  - sleep 5s
   - casperjs test markette-test.js

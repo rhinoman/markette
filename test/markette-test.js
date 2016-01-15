@@ -4,6 +4,10 @@
 
 phantom.injectJs('../bower_components/jquery/dist/jquery.js');
 
+casper.test.on("fail", function() {
+    casper.exit(-1);
+});
+
 casper.test.begin('Markette editor renders correctly', 4, function(test){
 
     casper.start('../index.html', function(){
