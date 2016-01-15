@@ -6,7 +6,7 @@ before_install:
   - npm install -g phantomjs
   - npm install -g casperjs
 script:
-  - cd test
   - bower install
   - sleep 5s
+  - cd test
   - casperjs test markette-test.js
