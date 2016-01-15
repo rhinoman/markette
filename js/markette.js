@@ -101,6 +101,11 @@
             return this.$("textarea#marketteInput").val();
         },
 
+        // Sets the contents of the input textarea
+        setText: function(text){
+            this.$("textarea#marketteInput").val(text);
+        },
+
         /**
          * Event handlers
          */
