@@ -203,16 +203,23 @@
             if(stripnewlines) {
                 selectionStrings.selection = selectionStrings.selection.replace(/(\r\n|\n|\r)/gm, "");
             }
+            //Check if preceding text already contains newline
+            var bs = selectionStrings.before;
+            var as = selectionStrings.after;
+            var prepend = tokens.before;
+            var append = tokens.after;
             if(!this._alreadyMarked(ta, tokens)){
-                if (selectionStrings.before === "" && selectionStrings.after !== ""){
-                    tokens.after += '\n\n';
-                } else if (selectionStrings.before !== "" && selectionStrings.after === ""){
-                    tokens.before = '\n\n' + tokens.before;
-                } else if (selectionStrings.before !== "" && selectionStrings.after !== ""){
-                    tokens.before = '\n\n' + tokens.before;
-                    tokens.after += '\n\n';
+                if (as.length > 0 && as[0] === '\n'){
+                    append += '\n';
+                } else if(as.length >0) {
+                    append += '\n\n';
                 }
-                this._replaceSelection(ta, tokens, selectionStrings);
+                if (bs.length > 0 && bs[bs.length-1] === '\n'){
+                    prepend = '\n' + prepend;
+                } else if(bs.length > 0) {
+                    prepend = '\n\n' + prepend;
+                }
+                this._replaceSelection(ta, {before: prepend, after: append}, selectionStrings);
             }
         },
 
