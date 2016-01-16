@@ -1,14 +1,52 @@
+/**
+ *  Markette
+ *  --------
+ *
+ *  v 0.3.0
+ *  http://github.com/rhinoman/markette
+ *
+ *  Copyright (c) 2016, James Adam
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *
+ *  * Neither the name of markette nor the names of its
+ *  contributors may be used to endorse or promote products derived from
+ *  this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ *  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ *  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ *  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ *  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 (function (root, factory) {
     //AMD module if available
     if (typeof define === 'function' && define.amd) {
-        define(['jQuery', 'underscore', 'marionette', 'commonmark'], factory);
+        define(['jquery', 'underscore', 'marionette', 'commonmark', 'bootstrap'], function($,_,Marionette,Commonmark){
+            return (root.Markette = factory(root, $, _, Marionette, Commonmark));
+        });
     //CommonJS
     } else if (typeof exports !== 'undefined'){
         var $ = require('jquery');
         var _ = require('underscore');
         var Marionette = require('marionette');
         var Commonmark = require('commonmark');
-        factory(root, exports, $, _, Marionette, Commonmark);
+        module.exports = factory(root, $, _, Marionette, Commonmark);
     } else {
     // Browser globals
         root.Markette = factory(root, root.jQuery, root._, root.Marionette, root.commonmark );
@@ -45,38 +83,78 @@
          * These functions create basic buttons for the toolbar
          */
         buttonTemplate: function(){
-            return _.template("<button id='<%= btnId %>' type='button' class='btn btn-default markette-btn'><%= glyph %></button>");
+            return _.template("<button id='<%= btnId %>' type='button' class='btn btn-default markette-btn' " +
+                "data-toggle='tooltip' data-placement='bottom' title='<%= tooltip %>'><%= glyph %></button>");
         },
         boldButton: function(){
-            return this.buttonTemplate()({btnId: "boldButton", glyph: "<span class='glyphicon glyphicon-bold'></span>"});
+            return this.buttonTemplate()({
+                btnId: "boldButton",
+                glyph: "<span class='glyphicon glyphicon-bold'></span>",
+                tooltip: "Bold Text"
+            });
         },
         italicButton: function(){
-            return this.buttonTemplate()({btnId: "italicButton", glyph: "<span class='glyphicon glyphicon-italic'></span>"});
+            return this.buttonTemplate()({
+                btnId: "italicButton",
+                glyph: "<span class='glyphicon glyphicon-italic'></span>",
+                tooltip: "Italic Text"
+            });
         },
         linkButton: function(){
-            return this.buttonTemplate()({btnId: "linkButton", glyph: "<span class='glyphicon glyphicon-link'></span>"});
+            return this.buttonTemplate()({
+                btnId: "linkButton",
+                glyph: "<span class='glyphicon glyphicon-link'></span>",
+                tooltip: "Hyperlink"
+            });
         },
         blockQuoteButton: function(){
-            return this.buttonTemplate()({btnId: "quoteButton", glyph: "<span class='glyphicon glyphicon-comment'></span>"});
+            return this.buttonTemplate()({
+                btnId: "quoteButton",
+                glyph: "<span class='glyphicon glyphicon-comment'></span>",
+                tooltip: "Block Quote"
+            });
         },
         codeBlockButton: function(){
-            return this.buttonTemplate()({btnId: "codeBlockButton", glyph: "<span class='mk-btn-text'>{ }</span>"});
+            return this.buttonTemplate()({
+                btnId: "codeBlockButton",
+                glyph: "<span class='mk-btn-text'>{ }</span>",
+                tooltip: "Code Block"
+            });
         },
         imageButton: function(){
-            return this.buttonTemplate()({btnId: "imageButton", glyph: "<span class='glyphicon glyphicon-picture'></span>"});
+            return this.buttonTemplate()({
+                btnId: "imageButton",
+                glyph: "<span class='glyphicon glyphicon-picture'></span>",
+                tooltip: "Image"
+            });
         },
         numberedListButton: function(){
-            return this.buttonTemplate()({btnId: "numberedListButton", glyph: "<p class='li-num'>1.<br/>2.<br/>3.</p>" +
-            "<span class='glyphicon glyphicon-menu-hamburger'></span>"});
+            return this.buttonTemplate()({
+                btnId: "numberedListButton",
+                glyph: "<span class='mk-btn-text'>1.</span>",
+                tooltip: "Numbered List"
+            });
         },
         bulletListButton: function(){
-            return this.buttonTemplate()({btnId: "bulletListButton", glyph: "<span class='glyphicon glyphicon-list'></span>"})
+            return this.buttonTemplate()({
+                btnId: "bulletListButton",
+                glyph: "<span class='glyphicon glyphicon-list'></span>",
+                tooltip: "Bulleted List"
+            })
         },
         heading1Button: function(){
-            return this.buttonTemplate()({btnId: "heading1Button", glyph: "<span class='mk-btn-text'>H1</span>"})
+            return this.buttonTemplate()({
+                btnId: "heading1Button",
+                glyph: "<span class='mk-btn-text'>H1</span>",
+                tooltip: "Level 1 Header"
+            })
         },
         heading2Button: function(){
-            return this.buttonTemplate()({btnId: "heading2Button", glyph: "<span class='mk-btn-text'>H2</span>"})
+            return this.buttonTemplate()({
+                btnId: "heading2Button",
+                glyph: "<span class='mk-btn-text'>H2</span>",
+                tooltip: "Level 2 Header"
+            })
         },
 
         // Renders the editor and toolbar
