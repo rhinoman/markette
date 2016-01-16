@@ -395,6 +395,13 @@
 
     });
 
+    // Override extend to pass events to child classes
+    Markette.EditorView.extend = function(child){
+        var view = Backbone.View.extend.apply(this, arguments);
+        view.prototype.events = _.extend({}, this.prototype.events, child.events);
+        return view;
+    };
+
     //The Preview... view
     Markette.Preview = Marionette.ItemView.extend({
         template: _.template('<div class="markette-preview"></div>'),
