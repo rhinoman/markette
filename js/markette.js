@@ -2,7 +2,7 @@
  *  Markette
  *  --------
  *
- *  v 0.3.0
+ *  v 0.3.1
  *  http://github.com/rhinoman/markette
  *
  *  Copyright (c) 2016, James Adam
