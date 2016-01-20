@@ -2,7 +2,7 @@
  *  Markette
  *  --------
  *
- *  v 0.3.1
+ *  v 0.3.2
  *  http://github.com/rhinoman/markette
  *
  *  Copyright (c) 2016, James Adam
@@ -304,10 +304,20 @@
         doInlineMarkup: function(tokens){
             var ta = this.$("textarea#marketteInput");
             var selectionStrings = this._getSelectionStrings(ta);
+            var selection = selectionStrings.selection;
+            //Is the last character of the seleciton a newline?
+            var lastNewline = selection[selection.length - 1] === '\n';
+            // Strip new lines
+            selectionStrings.selection = selection.replace(/(\r\n|\n|\r)/gm, "");
             // Make sure this text isn't already marked up
             if(this._alreadyMarked(ta, tokens)){
                 return false;
             } else {
+                if(lastNewline){
+                    //The user highlighted the newline by mistake, prepend it to
+                    //the 'after' string
+                    selectionStrings.after = '\n' + selectionStrings.after;
+                }
                 this._replaceSelection(ta, tokens, selectionStrings);
                 return true;
             }
