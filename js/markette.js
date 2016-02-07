@@ -2,7 +2,7 @@
  *  Markette
  *  --------
  *
- *  v 0.3.2
+ *  v 0.3.3
  *  http://github.com/rhinoman/markette
  *
  *  Copyright (c) 2016, James Adam
@@ -37,7 +37,7 @@
 (function (root, factory) {
     //AMD module if available
     if (typeof define === 'function' && define.amd) {
-        define(['jquery', 'underscore', 'marionette', 'commonmark', 'bootstrap'], function($,_,Marionette,Commonmark){
+        define(['jquery', 'underscore', 'marionette', 'commonmark'], function($,_,Marionette,Commonmark){
             return (root.Markette = factory(root, $, _, Marionette, Commonmark));
         });
     //CommonJS
@@ -57,7 +57,6 @@
     'use strict';
 
     var Markette = {};
-    Markette.VERSION = '0.1.0';
 
     //The Editor View
     Markette.EditorView = Marionette.ItemView.extend({

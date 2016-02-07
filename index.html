@@ -18,6 +18,7 @@
             mev.render();
             var mpv = new Markette.Preview({el: "#previewContainer"});
             mpv.render();
+            $('[data-toggle="tooltip"]').tooltip({container: 'body'});
             $("#previewButton").on("click", function(event){
                 mpv.renderPreview(mev.getText());
             });
